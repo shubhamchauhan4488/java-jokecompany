@@ -13,9 +13,8 @@ public abstract class Interaction {
         this.reader = reader;
     }
 
-    protected String prompt(String message, String inputType) throws IOException {
+    protected String prompt(String message) throws IOException {
         printer.print(message);
-        // inputType to check for expected String or number input
         return reader.readLine();
     }
 
