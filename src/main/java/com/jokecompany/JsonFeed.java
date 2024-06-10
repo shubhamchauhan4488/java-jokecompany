@@ -21,17 +21,13 @@ public class JsonFeed {
     private final HttpClient client;
 
     public JsonFeed(String endpoint) {
-        this.baseUrl = "https://us-central1-geotab-interviews.cloudfunctions.net" + endpoint;
+        this.baseUrl = endpoint;
         this.client = HttpClient.newHttpClient();
     }
 
-    public String buildUrlWithParams(Map<String, String> params) {
-        if (params == null || params.isEmpty()) {
-            return baseUrl;
-        }
-
-        StringBuilder url = new StringBuilder(baseUrl);
-        if (!params.isEmpty()) {
+    public String buildUrlWithParams(String endpoint, Map<String, String> params) {
+        StringBuilder url = new StringBuilder(baseUrl).append(endpoint);
+        if (params != null && !params.isEmpty()) {
             url.append("?");
             params.forEach((key, value) -> url.append(key).append("=").append(value).append("&"));
             url.setLength(url.length() - 1); // Remove trailing '&'
@@ -82,7 +78,7 @@ public class JsonFeed {
         if (category != null && !category.isEmpty()) {
             params.put("category", category);
         }
-        String url = buildUrlWithParams(params);
+        String url = buildUrlWithParams("/joke", params);
         for (int i = 0; i < number; i++) {
             String response = sendHttpRequest(url, "GET", null);
             jokes.add(parseJokeFromResponse(response));
@@ -91,7 +87,7 @@ public class JsonFeed {
     }
 
     public List<String> getCategories() throws IOException, InterruptedException, URISyntaxException {
-        String url = buildUrlWithParams(new HashMap<>());
+        String url = buildUrlWithParams("/joke_category", new HashMap<>());
         String response = sendHttpRequest(url, "GET", null);
 
         // Parse the JSON array from the response
