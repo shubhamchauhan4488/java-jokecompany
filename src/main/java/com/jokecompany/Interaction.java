@@ -19,8 +19,6 @@ public abstract class Interaction {
     }
 
     protected void printResults(List<String> results) {
-        for (String result : results) {
-            printer.print(result);
-        }
+        results.forEach(result -> printer.print("-> " + result));
     }
 }
