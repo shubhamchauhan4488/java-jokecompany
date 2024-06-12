@@ -17,9 +17,10 @@ public class UserInteraction {
         this.jokeInteraction = jokeInteraction;
     }
 
-    public void run() throws InterruptedException, IOException, URISyntaxException {
-        try {
+    public void run() throws NumberFormatException {
+
             while (true) {
+                try {
                 displayInstructions();
                 char key = reader.readLine().charAt(0);
                 switch (key) {
@@ -41,16 +42,18 @@ public class UserInteraction {
                         printer.print("Invalid input. Please try again. Press ? to get instructions.");
                         break;
                 }
+                } catch (IOException | URISyntaxException | RuntimeException | InterruptedException e) {
+                    printer.print("An error occurred: " + e.getMessage());
+                }
             }
-        } catch (IOException | URISyntaxException | InterruptedException e) {
-            printer.print("An error occurred: " + e.getMessage());
-        }
+
     }
 
     private void displayInstructions() {
         printer.print("Instructions:");
         printer.print("- Press 'c' to get categories of jokes.");
         printer.print("- Press 'r' to get random jokes.");
+        printer.print("- Press 'q' to exit.");
         printer.print("- Press '?' to display these instructions again.");
     }
 }
