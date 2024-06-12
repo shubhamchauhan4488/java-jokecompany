@@ -17,14 +17,34 @@ public class JokeInteraction extends Interaction {
     }
 
     public void fetchJokes() throws InterruptedException, IOException, URISyntaxException {
-        String categoryChoice = prompt("Want to specify a category? y/n");
         String category = "";
-
-        if (categoryChoice.equalsIgnoreCase("y")) {
-            category = prompt("Enter a category:");
+        try {
+            String categoryChoice = prompt("Want to specify a category? y/n");
+            if (categoryChoice.equalsIgnoreCase("y")) {
+                category = prompt("Enter a category:");
+            } else if (categoryChoice.equalsIgnoreCase("n")) {
+                category = "";
+            }else{
+                throw new IllegalArgumentException("Invalid input. Please enter either 'n' or 'y' only.");
+            }
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            throw e; // need to break the flow here to re-do
         }
-        int numberOfJokes = Integer.parseInt(prompt("How many jokes do you want? (1-9)"));
-        this.jokes = jokeService.getRandomJokes(category, numberOfJokes);
+
+        try {
+            int numberOfJokes = Integer.parseInt(prompt("How many jokes do you want? (1-9)"));
+            if (numberOfJokes < 1 || numberOfJokes > 9) {
+                throw new IllegalArgumentException("Number of jokes must be between 1 and 9.");
+            }
+            this.jokes = jokeService.getRandomJokes(category, numberOfJokes);
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Invalid input format. Cannot convert to number. Enter number only");
+            throw e;
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+            throw e;
+        }
     }
 
     public List<String> getJokes(){
