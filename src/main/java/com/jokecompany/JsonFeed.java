@@ -35,29 +35,13 @@ public class JsonFeed {
         return url.toString();
     }
 
-    public String sendHttpRequest(String url, String method, String requestBody) throws URISyntaxException, IOException, InterruptedException {
+    public String sendHttpRequest(String url, String method) throws URISyntaxException, IOException, InterruptedException {
         URI uri = new URI(url);
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(uri);
 
-        switch (method.toUpperCase()) {
-            case "POST":
-                requestBuilder.POST(HttpRequest.BodyPublishers.ofString(requestBody != null ? requestBody : ""));
-                break;
-            case "PUT":
-                requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(requestBody != null ? requestBody : ""));
-                break;
-            case "DELETE":
-                if (requestBody != null) {
-                    requestBuilder.method("DELETE", HttpRequest.BodyPublishers.ofString(requestBody));
-                } else {
-                    requestBuilder.DELETE();
-                }
-                break;
-            case "GET":
-            default:
-                requestBuilder.GET();
-                break;
-        }
+        if (method.equalsIgnoreCase("GET")) {
+            requestBuilder.GET();
+        }// we can extend for more methods
 
         HttpRequest request = requestBuilder.build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -79,16 +63,22 @@ public class JsonFeed {
             params.put("category", category);
         }
         String url = buildUrlWithParams("/joke", params);
+
+        // adding unique jokes to the list
         for (int i = 0; i < number; i++) {
-            String response = sendHttpRequest(url, "GET", null);
-            jokes.add(parseJokeFromResponse(response));
+            String joke;
+            do {
+                String response = sendHttpRequest(url, "GET");
+                joke = parseJokeFromResponse(response);
+            } while (jokes.contains(joke));
+            jokes.add(joke); // add the joke only if it's not already in the list
         }
         return jokes;
     }
 
     public List<String> getCategories() throws IOException, InterruptedException, URISyntaxException {
         String url = buildUrlWithParams("/joke_category", new HashMap<>());
-        String response = sendHttpRequest(url, "GET", null);
+        String response = sendHttpRequest(url, "GET");
 
         // Parse the JSON array from the response
         JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
