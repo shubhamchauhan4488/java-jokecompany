@@ -1,15 +1,10 @@
 package com.jokecompany;
 
-
 public class ConsolePrinter {
     private String printValue;
 
-    public ConsolePrinter value(String value) {
-        this.printValue = value;
-        return this;
-    }
-
     public void print(String s) {
+        this.printValue = s;
         System.out.println(s);
     }
 
